@@ -1,0 +1,203 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="assets/reveal.js/css/reveal.css">
+  <link rel="stylesheet" href="assets/reveal.js/css/theme/night.css">
+  <link rel="stylesheet" href="assets/reveal.js/lib/css/zenburn.css">
+  <link rel="stylesheet" href="assets/flexboxgrid.min.css" type="text/css" >
+  <link rel="stylesheet" href="custom.css" type="text/css">
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section>
+        <h2>Continuous Delivery</h2>
+        <h5>by Bob Wei (Nov 2017)</h5>
+        <p>
+          <a href="https://bobwei.github.io/continuous-delivery">
+            https://bobwei.github.io/continuous-delivery
+          </a>
+        </p>
+      </section>
+      <section>
+        <ul>
+          <li>
+            Applicaiton Runtime
+          </li>
+          <li>
+            Continuous Delivery
+          </li>
+          <li>
+            Scalable
+          </li>
+          <li>
+            Any Number of Applicaitons
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h2>
+          Applicaiton Runtime
+        </h2>
+        <p>
+          Use Docker Swarm to run applications on multiple hosts.
+        </p>
+        <ul>
+          <li class="fragment">
+            Docker <a>native</a> cluster management
+          </li>
+          <li class="fragment">
+            Simple interface to access docker API inside <a>containers</a>
+          </li>
+          <li class="fragment">
+            Easy to scale
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h2>
+          Applicaiton Runtime
+        </h2>
+        <p class="fragment">
+          Create services inside <a>containers</a>
+        </p>
+        <pre class="fragment">
+          <code data-trim data-noescape class="bash">
+# "/var/run/docker.sock" giving docker host access to the created container
+
+docker run \
+  --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  docker \
+  docker service create -d -P --name hellonginx nginx
+          </code>
+        </pre>
+        <pre class="fragment">
+          <code data-trim data-noescape class="bash">
+# check running process on the docker host
+docker ps -f name=hellonginx
+
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                   NAMES
+65d57ed2b58b        nginx               "nginx -g 'daemon ..."   5 seconds ago       Up 4 seconds        0.0.0.0:32770->80/tcp   hellonginx
+          </code>
+        </pre>
+      </section>
+      <section>
+        <h2>
+          Applicaiton Runtime
+        </h2>
+        <p>
+          Scale by adding hosts to cluster.
+        </p>
+        <div class="fragment">
+          <pre>
+            <code data-trim data-noescape class="bash">
+git clone https://github.com/bobwei/create-docker-hosts.git && \
+  cd create-docker-hosts && \
+  ./install.sh
+            </code>
+          </pre>
+          <p>
+            Run Docker daemon on each host.
+          </p>
+          <ul>
+            <li>
+              <a href="https://github.com/bobwei/create-docker-hosts">create-docker-host</a>
+            </li>
+          </ul>
+        </div>
+      </section>
+      <section>
+        <h2>
+          Applicaiton Runtime
+        </h2>
+        <div class="fragment">
+          <p>
+            Run in Docker Swarm mode on manager node.
+          </p>
+          <pre>
+            <code data-trim data-noescape>
+docker swarm init
+            </code>
+          </pre>
+        </div>
+        <div class="fragment">
+          <p>
+            Join as worker on worker node.
+          </p>
+          <pre>
+            <code data-trim data-noescape>
+docker swarm join --token ${WORKER_TOKEN} ${MANAGER_IP}
+            </code>
+          </pre>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script src="assets/reveal.js/lib/js/head.min.js"></script>
+  <script src="assets/reveal.js/js/reveal.js"></script>
+  <script>
+    Reveal.initialize({
+      slideNumber: 'c/t',
+      history: true,
+      dependencies: [
+        // Cross-browser shim that fully implements classList - https://github.com/eligrey/classList.js/
+        {
+          src: 'assets/reveal.js/lib/js/classList.js',
+          condition: function() {
+            return !document.body.classList;
+          },
+        },
+
+        // Interpret Markdown in <section> elements
+        {
+          src: 'assets/reveal.js/plugin/markdown/marked.js',
+          condition: function() {
+            return !!document.querySelector('[data-markdown]');
+          },
+        },
+        {
+          src: 'assets/reveal.js/plugin/markdown/markdown.js',
+          condition: function() {
+            return !!document.querySelector('[data-markdown]');
+          },
+        },
+
+        // Syntax highlight for <code data-trim data-noescape class="language-js"> elements
+        {
+          src: 'assets/reveal.js/plugin/highlight/highlight.js',
+          async: true,
+          callback: function() {
+            hljs.initHighlightingOnLoad();
+          },
+        },
+
+        // Zoom in and out with Alt+click
+        {
+          src: 'assets/reveal.js/plugin/zoom-js/zoom.js',
+          async: true,
+        },
+
+        // Speaker notes
+        {
+          src: 'assets/reveal.js/plugin/notes/notes.js',
+          async: true,
+        },
+      ],
+    });
+  </script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-72851924-2"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag() {
+  dataLayer.push(arguments);
+}
+gtag('js', new Date());
+
+gtag('config', 'YOUR_GA');
+</script>
+<script type="text/javascript" src="bundle.js"></script></body>
+
+</html>
